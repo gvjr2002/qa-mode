@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script referrerpolicy="no-referrer-when-downgrade" src="https://dev.visualwebsiteoptimizer.com/cloud-run-test/final/3000206.js" id="vwoCode"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TESTLAB — UI Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;1,700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #1a1a1a;
+      --border: #2a2a2a;
+      --accent: #e8ff47;
+      --accent2: #ff4747;
+      --text: #f0ede8;
+      --text-dim: #666;
+      --text-mid: #999;
+      --mono: 'DM Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --serif: 'Playfair Display', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ─── CUSTOM CURSOR ─── */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.05s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 32px; height: 32px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+      opacity: 0.5;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 28px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-tag {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+      padding-top: 80px;
+    }
+    .hero-left {
+      padding: 80px 40px 80px 40px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    .hero-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(72px, 8vw, 120px);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      margin-bottom: 32px;
+    }
+    .hero-title span {
+      color: var(--accent);
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(60px, 6vw, 96px);
+    }
+    .hero-desc {
+      color: var(--text-mid);
+      max-width: 380px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+      font-size: 13px;
+    }
+    .hero-cta-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 14px 28px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: #fff;
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--accent);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 14px 28px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--text-mid); color: var(--text); }
+
+    .hero-right {
+      padding: 80px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-right::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(232,255,71,0.06) 0%, transparent 70%);
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      animation: fadeSlideIn 0.6s ease both;
+    }
+    .stat-row:nth-child(1) { animation-delay: 0.1s; }
+    .stat-row:nth-child(2) { animation-delay: 0.2s; }
+    .stat-row:nth-child(3) { animation-delay: 0.3s; }
+    .stat-row:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .stat-num {
+      font-family: var(--display);
+      font-size: 52px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap {
+      border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+      padding: 12px 0;
+      background: var(--surface);
+    }
+    .ticker {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: ticker 20s linear infinite;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 32px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .ticker-item .dot {
+      width: 4px; height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── FEATURES ─── */
+    .section {
+      padding: 100px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 64px;
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(40px, 5vw, 72px);
+      line-height: 1;
+    }
+    .section-title em {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+    .feature-card {
+      background: var(--bg);
+      padding: 40px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .feature-card:hover { background: var(--surface2); }
+    .feature-card:hover::before { transform: scaleX(1); }
+
+    .feature-num {
+      font-family: var(--display);
+      font-size: 60px;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 24px;
+      transition: color 0.3s;
+    }
+    .feature-card:hover .feature-num { color: var(--accent); }
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    .feature-name {
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ─── FORM SECTION ─── */
+    .form-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+    .form-left {
+      background: var(--bg);
+      padding: 80px 40px;
+    }
+    .form-right {
+      background: var(--surface);
+      padding: 80px 40px;
+    }
+    .input-group {
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    input, textarea, select {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      padding: 10px 0;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+    textarea { resize: none; min-height: 100px; }
+    select option { background: var(--surface); }
+    .radio-group { display: flex; gap: 24px; margin-top: 8px; }
+    .radio-opt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-mid);
+      cursor: pointer;
+    }
+    .radio-opt input[type=radio] {
+      width: auto; border: none;
+      accent-color: var(--accent);
+    }
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .check-opt {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-mid);
+      cursor: pointer;
+    }
+    .check-opt input[type=checkbox] {
+      width: auto; border: none;
+      accent-color: var(--accent);
+    }
+    .range-input { padding: 10px 0; accent-color: var(--accent); cursor: pointer; }
+    .range-value {
+      font-family: var(--display);
+      font-size: 32px;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    /* ─── STATUS ─── */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0;
+      font-size: 11px;
+      color: var(--text-mid);
+      letter-spacing: 0.1em;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #3dff8f;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .progress-row {
+      margin-bottom: 20px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 2px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 1.5s ease;
+    }
+    .progress-fill.red { background: var(--accent2); }
+    .progress-fill.white { background: var(--text); }
+
+    /* ─── CARDS ─── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      margin-top: 48px;
+    }
+    .info-card {
+      background: var(--surface);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card-badge {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: fit-content;
+    }
+    .card-badge.active { border-color: var(--accent); color: var(--accent); }
+    .card-badge.error { border-color: var(--accent2); color: var(--accent2); }
+    .card-title {
+      font-family: var(--display);
+      font-size: 28px;
+      letter-spacing: 0.04em;
+    }
+    .card-body {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-logo {
+      font-family: var(--display);
+      font-size: 40px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .footer-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 280px;
+    }
+    .footer-heading {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 20px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-links a {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-bottom {
+      padding: 20px 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .form-section { grid-template-columns: 1fr; }
+      .cards-grid { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">TESTLAB</div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#forms">Forms</a></li>
+    <li><a href="#metrics">Metrics</a></li>
+    <li><a href="#cards">Cards</a></li>
+  </ul>
+  <div class="nav-tag">v2.4.1 — BETA</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">// Testing Environment Active</p>
+    <h1 class="hero-title">
+      BUILD.<br>
+      TEST.<br>
+      <span>Ship.</span>
+    </h1>
+    <p class="hero-desc">
+      A fully interactive prototype environment. Every element here is functional — forms capture input, animations respond to interaction, components behave as they would in production.
+    </p>
+    <div class="hero-cta-group">
+      <button class="btn-primary" onclick="alert('🚀 Test successful!')">Run Test Suite</button>
+      <button class="btn-ghost">View Docs</button>
+    </div>
+    <div class="status-bar" style="margin-top: 32px;">
+      <span class="status-dot"></span>
+      <span>All systems operational &nbsp;·&nbsp; 99.97% uptime</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="stat-row">
+      <span class="stat-num">142</span>
+      <span class="stat-label">Components rendered</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-num">3ms</span>
+      <span class="stat-label">Avg response time</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-num">0</span>
+      <span class="stat-label">Errors detected</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Test coverage</span>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker">
+    <span class="ticker-item"><span class="dot"></span> UI Components</span>
+    <span class="ticker-item"><span class="dot"></span> Form Validation</span>
+    <span class="ticker-item"><span class="dot"></span> Responsive Layout</span>
+    <span class="ticker-item"><span class="dot"></span> Interaction States</span>
+    <span class="ticker-item"><span class="dot"></span> CSS Animations</span>
+    <span class="ticker-item"><span class="dot"></span> Accessibility</span>
+    <span class="ticker-item"><span class="dot"></span> Typography Scale</span>
+    <span class="ticker-item"><span class="dot"></span> Color System</span>
+    <span class="ticker-item"><span class="dot"></span> UI Components</span>
+    <span class="ticker-item"><span class="dot"></span> Form Validation</span>
+    <span class="ticker-item"><span class="dot"></span> Responsive Layout</span>
+    <span class="ticker-item"><span class="dot"></span> Interaction States</span>
+    <span class="ticker-item"><span class="dot"></span> CSS Animations</span>
+    <span class="ticker-item"><span class="dot"></span> Accessibility</span>
+    <span class="ticker-item"><span class="dot"></span> Typography Scale</span>
+    <span class="ticker-item"><span class="dot"></span> Color System</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section reveal" id="features">
+  <div class="section-header">
+    <div>
+      <p class="section-label">// 01 — Capabilities</p>
+      <h2 class="section-title">What's <em>Inside</em></h2>
+    </div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-num">01</div>
+      <div class="feature-icon">⚡</div>
+      <div class="feature-name">Live Interaction</div>
+      <div class="feature-desc">Every button, input, and control responds in real time. Hover states, focus rings, and transitions are all fully implemented.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">02</div>
+      <div class="feature-icon">🎨</div>
+      <div class="feature-name">Design System</div>
+      <div class="feature-desc">Built on a coherent token system — colors, spacing, typography, and motion all flow from a single source of truth.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">03</div>
+      <div class="feature-icon">📐</div>
+      <div class="feature-name">Responsive Grid</div>
+      <div class="feature-desc">Every layout adapts fluidly across breakpoints. Tested on mobile, tablet, and widescreen displays.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">04</div>
+      <div class="feature-icon">🔒</div>
+      <div class="feature-name">Form Handling</div>
+      <div class="feature-desc">Inputs, selects, checkboxes, radios, and range sliders. All form patterns are validated and functional.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">05</div>
+      <div class="feature-icon">📊</div>
+      <div class="feature-name">Data Visualization</div>
+      <div class="feature-desc">Progress bars, status indicators, and metric displays. Visual feedback for system state at a glance.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">06</div>
+      <div class="feature-icon">🌐</div>
+      <div class="feature-name">Zero Dependencies</div>
+      <div class="feature-desc">Pure HTML, CSS, and vanilla JavaScript. No frameworks, no libraries, no build step required.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMS -->
+<section class="reveal" id="forms">
+  <div style="padding: 20px 40px; border-bottom: 1px solid var(--border);">
+    <p class="section-label">// 02 — Form Components</p>
+    <h2 class="section-title" style="font-family: var(--display); font-size: clamp(40px,5vw,72px);">Input <em style="font-family:var(--serif);font-style:italic;color:var(--accent)">Fields</em></h2>
+  </div>
+  <div class="form-section">
+    <div class="form-left">
+      <div class="input-group">
+        <label>Full name</label>
+        <input type="text" placeholder="Enter your name…"/>
+      </div>
+      <div class="input-group">
+        <label>Email address</label>
+        <input type="email" placeholder="you@example.com"/>
+      </div>
+      <div class="input-group">
+        <label>Category</label>
+        <select>
+          <option value="">Select a category…</option>
+          <option>Frontend</option>
+          <option>Backend</option>
+          <option>Design</option>
+          <option>DevOps</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Priority level</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="priority" value="low"/> Low</label>
+          <label class="radio-opt"><input type="radio" name="priority" value="mid" checked/> Medium</label>
+          <label class="radio-opt"><input type="radio" name="priority" value="high"/> High</label>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Message</label>
+        <textarea placeholder="Describe your test case…"></textarea>
+      </div>
+      <button class="btn-primary" onclick="handleSubmit()">Submit Form</button>
+      <p id="form-msg" style="margin-top:12px;font-size:11px;color:var(--accent);letter-spacing:0.1em;min-height:20px;"></p>
+    </div>
+    <div class="form-right">
+      <div class="input-group">
+        <label>Enabled modules</label>
+        <div class="checkbox-group">
+          <label class="check-opt"><input type="checkbox" checked/> Analytics engine</label>
+          <label class="check-opt"><input type="checkbox" checked/> Error logging</label>
+          <label class="check-opt"><input type="checkbox"/> Performance profiler</label>
+          <label class="check-opt"><input type="checkbox" checked/> Real-time preview</label>
+        </div>
+      </div>
+      <div class="input-group" style="margin-top: 36px;">
+        <label>Threshold: <span id="thresholdVal">60</span>%</label>
+        <input type="range" class="range-input" min="0" max="100" value="60"
+          oninput="document.getElementById('thresholdVal').textContent=this.value"/>
+        <div class="range-value" id="rangeDisplay">60</div>
+      </div>
+      <div style="margin-top: 40px;">
+        <label style="margin-bottom: 16px; display:block">System metrics</label>
+        <div class="progress-row">
+          <div class="progress-meta"><span>CPU Usage</span><span>72%</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:72%"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-meta"><span>Memory</span><span>45%</span></div>
+          <div class="progress-track"><div class="progress-fill white" style="width:45%"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-meta"><span>Error Rate</span><span>3%</span></div>
+          <div class="progress-track"><div class="progress-fill red" style="width:3%"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-meta"><span>Test Coverage</span><span>98%</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:98%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARDS -->
+<section class="section reveal" id="cards">
+  <div class="section-header">
+    <div>
+      <p class="section-label">// 03 — Card Components</p>
+      <h2 class="section-title">Test <em>Cards</em></h2>
+    </div>
+  </div>
+  <div class="cards-grid">
+    <div class="info-card">
+      <span class="card-badge active">Active</span>
+      <div class="card-title">Unit Tests</div>
+      <div class="card-body">Core logic tested across 42 modules. Snapshot validation, boundary conditions, and async flows all passing without issue.</div>
+      <div class="card-footer"><span>Last run: 2 min ago</span><span style="color:var(--accent)">142 passed</span></div>
+    </div>
+    <div class="info-card">
+      <span class="card-badge">Pending</span>
+      <div class="card-title">Integration</div>
+      <div class="card-body">End-to-end API integration tests queued. Database seeding, auth flow, and CRUD operations scheduled for next cycle.</div>
+      <div class="card-footer"><span>Queued: 18 tests</span><span style="color:var(--text-mid)">Running soon</span></div>
+    </div>
+    <div class="info-card">
+      <span class="card-badge error">1 Failed</span>
+      <div class="card-title">Visual Reg.</div>
+      <div class="card-body">Visual regression detected in the modal overlay component on Safari 16.x. All other browsers nominal. Patch in review.</div>
+      <div class="card-footer"><span>Diff: 0.4%</span><span style="color:var(--accent2)">Fix pending</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">TESTLAB</div>
+    <p class="footer-desc">A comprehensive UI testing environment for validating components, interactions, and design systems before shipping to production.</p>
+  </div>
+  <div>
+    <p class="footer-heading">Product</p>
+    <ul class="footer-links">
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">Components</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Changelog</a></li>
+    </ul>
+  </div>
+  <div>
+    <p class="footer-heading">Resources</p>
+    <ul class="footer-links">
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">API Reference</a></li>
+      <li><a href="#">Tutorials</a></li>
+      <li><a href="#">Community</a></li>
+    </ul>
+  </div>
+  <div>
+    <p class="footer-heading">Company</p>
+    <ul class="footer-links">
+      <li><a href="#">About</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Careers</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2026 TESTLAB — All rights reserved</span>
+  <span>Built for testing purposes only</span>
+</div>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 80);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Range sync
+  document.querySelector('.range-input').addEventListener('input', function() {
+    document.getElementById('rangeDisplay').textContent = this.value;
+  });
+
+  // Form submit
+  function handleSubmit() {
+    const msg = document.getElementById('form-msg');
+    msg.textContent = '✓ Test submission recorded successfully.';
+    setTimeout(() => msg.textContent = '', 3000);
+  }
+
+  // Animate progress bars on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.progress-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => bar.style.width = w, 100);
+      });
+    }, 300);
+  });
+</script>
+</body>
+</html>
